@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(fontSize: 20.0, color: Colors.black),
         ),
       ),
-      home: const MyHomePage(title: 'LifeBattery🔋 v1.0.0'),
+      home: const MyHomePage(title: 'LifeBattery🔋'),
     );
   }
 }
