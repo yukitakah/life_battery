@@ -87,12 +87,12 @@ class _MyHomePageState extends State<MyHomePage> {
         SnackBar(
           content: Text(message),
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),  // the duration
+          duration: const Duration(seconds: 2),  // the duration
         ),
       );
     } else {
       // a delay equal to the SnackBar's duration
-      Future.delayed(Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 2), () {
         _scaffoldMessengerKey.currentState?.clearSnackBars();
       });
     }
