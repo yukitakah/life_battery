@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 void main() {
@@ -34,12 +35,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // DateTime _birthday = DateTime.now(); // default date is today
   DateTime _birthday = DateTime.now().subtract(const Duration(
       days: 365 * 25)); // default date is 25 years ago from today
-  final TextEditingController _lifeExpectancyController =
-      TextEditingController();
+  int _lifeExpectancy = 70; // initialize with a sensible default
+  int _validExpectancy = 70; // initialize with a sensible default
   double _percentage = 0.0;
+  bool _hasError = false;
 
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -51,37 +52,39 @@ class _MyHomePageState extends State<MyHomePage> {
     if (picked != null && picked != _birthday) {
       setState(() {
         _birthday = picked;
-        _calculatePercentage();
+      });
+      _calculatePercentage(_validExpectancy);
+    }
+  }
+
+  void _calculatePercentage(int lifeExpectancy) {
+    double ageInDays = DateTime.now().difference(_birthday).inDays.toDouble();
+    double ageInYears = ageInDays / 365.25;  // consider a year as 365.25 days on average to account for leap years
+
+    if (ageInYears > lifeExpectancy) {
+      _showError('Your age is greater than your life expectancy.');
+      setState(() {
+        _hasError = true;
+      });
+    } else {
+      setState(() {
+        _hasError = false;
+        _validExpectancy = _lifeExpectancy; // set validExpectancy to the value selected in the picker
+        _percentage = ageInYears / lifeExpectancy;
       });
     }
   }
 
-  _calculatePercentage() {
-    double? lifeExpectancy = double.tryParse(_lifeExpectancyController.text);
-    if (lifeExpectancy == null || lifeExpectancy <= 0) {
-      _showError('Please enter a valid number for life expectancy.');
-      return;
-    }
-
-    double currentYear = DateTime.now().year.toDouble();
-    double age = currentYear - _birthday.year.toDouble();
-    if (age > lifeExpectancy) {
-      _showError('Your age is greater than your life expectancy.');
-      return;
-    }
-
-    setState(() {
-      _percentage = age / lifeExpectancy;
-    });
-  }
-
   _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    if(_hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -111,18 +114,16 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 10),
             SizedBox(
-              width: 200,
-              child: TextField(
-                controller: _lifeExpectancyController,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                onSubmitted: (_) => _calculatePercentage(),
-                decoration: InputDecoration(
-                  labelText: "Life expectancy",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
+              height: 150.0,
+              child: CupertinoPicker(
+                itemExtent: 30.0,
+                onSelectedItemChanged: (index) {
+                  setState(() {
+                    _lifeExpectancy = index + 1;  // assuming the lowest expectancy to be 1
+                  });
+                  _calculatePercentage(_lifeExpectancy);
+                },
+                children: List<Widget>.generate(150, (index) => Text('${index + 1}')),  // assuming the highest expectancy to be 150
               ),
             ),
             const SizedBox(height: 30),

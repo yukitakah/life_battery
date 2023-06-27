@@ -40,6 +40,40 @@
 			<key>uniqueIdentifier</key>
 			<string>8432797B-91F1-4DA8-B153-ACD90B791C2E</string>
 		</dict>
+		<key>B2339138-CE04-4D10-9DF6-AE47A4987804</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>B2339138-CE04-4D10-9DF6-AE47A4987804.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>Runner project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>Flutter Assemble</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Cleaning workspace Runner with scheme Flutter Assemble</string>
+			<key>timeStartedRecording</key>
+			<real>709563096.80576205</real>
+			<key>timeStoppedRecording</key>
+			<real>709563097.06785595</real>
+			<key>title</key>
+			<string>Cleaning workspace Runner with scheme Flutter Assemble</string>
+			<key>uniqueIdentifier</key>
+			<string>B2339138-CE04-4D10-9DF6-AE47A4987804</string>
+		</dict>
 	</dict>
 </dict>
 </plist>
