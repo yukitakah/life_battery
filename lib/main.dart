@@ -42,6 +42,9 @@ class _MyHomePageState extends State<MyHomePage> {
   double _percentage = 0.0;
   bool _hasError = false;
 
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -59,7 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _calculatePercentage(int lifeExpectancy) {
     double ageInDays = DateTime.now().difference(_birthday).inDays.toDouble();
-    double ageInYears = ageInDays / 365.25;  // consider a year as 365.25 days on average to account for leap years
+    double ageInYears = ageInDays /
+        365.25; // consider a year as 365.25 days on average to account for leap years
 
     if (ageInYears > lifeExpectancy) {
       _showError('Your age is greater than your life expectancy.');
@@ -69,81 +73,96 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       setState(() {
         _hasError = false;
-        _validExpectancy = _lifeExpectancy; // set validExpectancy to the value selected in the picker
+        _validExpectancy =
+            _lifeExpectancy; // set validExpectancy to the value selected in the picker
         _percentage = ageInYears / lifeExpectancy;
       });
     }
   }
 
-  _showError(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    if(_hasError) {
-      ScaffoldMessenger.of(context).showSnackBar(
+  void _showError(String message) {
+    if (_hasError) {
+      _scaffoldMessengerKey.currentState?.clearSnackBars();
+      _scaffoldMessengerKey.currentState?.showSnackBar(
         SnackBar(
           content: Text(message),
           backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),  // the duration
         ),
       );
+    } else {
+      // a delay equal to the SnackBar's duration
+      Future.delayed(Duration(seconds: 2), () {
+        _scaffoldMessengerKey.currentState?.clearSnackBars();
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title, style: Theme.of(context).textTheme.bodyLarge),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Birthday: ${DateFormat('MMMM dd, yyyy').format(_birthday)}',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => _selectDate(context),
-              child: const Text('Select birthday'),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'I will live up to',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 150.0,
-              child: CupertinoPicker(
-                itemExtent: 30.0,
-                onSelectedItemChanged: (index) {
-                  setState(() {
-                    _lifeExpectancy = index + 1;  // assuming the lowest expectancy to be 1
-                  });
-                  _calculatePercentage(_lifeExpectancy);
-                },
-                children: List<Widget>.generate(150, (index) => Text('${index + 1}')),  // assuming the highest expectancy to be 150
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerKey,
+      child: Scaffold(
+        appBar: AppBar(
+          title:
+              Text(widget.title, style: Theme.of(context).textTheme.bodyLarge),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Birthday: ${DateFormat('MMMM dd, yyyy').format(_birthday)}',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-            ),
-            const SizedBox(height: 30),
-            Text(
-              'Remaining life percentage:',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 10),
-            LinearProgressIndicator(
-              value: 1 - _percentage,
-              minHeight: 20,
-              backgroundColor: Colors.grey,
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '${(100 - _percentage * 100).toStringAsFixed(2)}%',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () => _selectDate(context),
+                child: const Text('Select birthday'),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'I will live up to',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 150.0,
+                child: CupertinoPicker(
+                  itemExtent: 30.0,
+                  onSelectedItemChanged: (index) {
+                    setState(() {
+                      _lifeExpectancy =
+                          index + 1; // assuming the lowest expectancy to be 1
+                    });
+                    _calculatePercentage(_lifeExpectancy);
+                  },
+                  children: List<Widget>.generate(
+                      150,
+                      (index) => Text(
+                          '${index + 1}')), // assuming the highest expectancy to be 150
+                ),
+              ),
+              const SizedBox(height: 30),
+              Text(
+                'Remaining life percentage:',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 10),
+              LinearProgressIndicator(
+                value: 1 - _percentage,
+                minHeight: 20,
+                backgroundColor: Colors.grey,
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '${(100 - _percentage * 100).toStringAsFixed(2)}%',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
         ),
       ),
     );
